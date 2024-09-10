@@ -1,0 +1,1 @@
+# currency_difference_counter
