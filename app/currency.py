@@ -1,6 +1,8 @@
 import json
 from urllib.request import urlopen
 
+invoice_date = "2024-05-16"
+transfer_date = "2024-05-16"
 
 def get_currency_rate(date):
     invoice_rate_url = urlopen(f'https://api.nbp.pl/api/exchangerates/tables/A/{date}/?format=json')
@@ -10,20 +12,20 @@ def get_currency_rate(date):
     rate = in_jdata[0]['rates'][1]["mid"]
     return rate
 
-def collect_currency_rates():
-    while True:
-        try:
-            invoice_date = input("When the invoice was issued? (a date in the YYYY-MM-DD format) ")
-            break
-        except ValueError:
-            print("Invalid Input, please use YYYY-MM-DD format")
-
-    while True:
-        try:
-            transfer_date = input("When the transfer was registered to your account? (a date in the YYYY-MM-DD format) ")
-            break
-        except ValueError:
-            print("Invalid Input, please use YYYY-MM-DD format")
+def collect_currency_rates(invoice_date, transfer_date):
+    # while True:
+    #     try:
+    #         invoice_date = input("When the invoice was issued? (a date in the YYYY-MM-DD format) ")
+    #         break
+    #     except ValueError:
+    #         print("Invalid Input, please use YYYY-MM-DD format")
+    #
+    # while True:
+    #     try:
+    #         transfer_date = input("When the transfer was registered to your account? (a date in the YYYY-MM-DD format) ")
+    #         break
+    #     except ValueError:
+    #         print("Invalid Input, please use YYYY-MM-DD format")
 
     date_and_rate = {
         "invoice_date": invoice_date,
@@ -36,14 +38,14 @@ def collect_currency_rates():
 
 
 def calculate_currency_dif():
-    while True:
-        try:
-            invoice_value = float(input("Input the value of your latest invoice in USD... "))
-            break
-        except ValueError:
-            print("Invalid Input, please use format XXXX.XX")
-
-    date_and_rate = collect_currency_rates()
+    # while True:
+    #     try:
+    #         invoice_value = float(input("Input the value of your latest invoice in USD... "))
+    #         break
+    #     except ValueError:
+    #         print("Invalid Input, please use format XXXX.XX")
+    invoice_value = 1000
+    date_and_rate = collect_currency_rates(invoice_date, transfer_date)
 
     # calculate invoice value in PLN for the date of the invoice issue (previous working day)
     invoice_value_pln = invoice_value * date_and_rate["invoice_rate"]
