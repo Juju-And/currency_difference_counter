@@ -14,8 +14,8 @@ def create_app():
 
     # Please adjust accordingly
     POSTGRES = {
-        "user": "postgres",
-        "pw": "coderslab",
+        "user": "******",
+        "pw": "******",
         "db": "currencyrates",
         "host": "localhost",
         "port": "5432",
