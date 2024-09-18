@@ -6,7 +6,7 @@
 
   <ul>
     {% for invoice in invoices %}
-      <li> {{ invoice }} <button onclick="deleteInvoice({{ invoice.invoice_id }})">Delete</button> </li>
+      <li> {{ invoice }} <button onclick="deleteInvoice({{ invoice.invoice_id }})">Delete</button><a href="{{url_for('details', invoice_id=invoice.invoice_id)}}">Details</a></li>
     {% endfor %}
 
   </ul>

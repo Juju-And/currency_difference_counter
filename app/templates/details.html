@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+
+{% block content %}
+<a href="/">
+    <form action="/">
+         <input class="btn" type="button" value="HOME" />
+    </form>
+</a>
+
+<h1>Invoice {{ invoice.invoice_id }}</h1>
+
+<p>Invoice value: {{ invoice.invoice_value }}</p>
+<p>Currency: {{ invoice.invoice_currency }}</p>
+<p>Issue date: {{ invoice.invoice_issue_date }}</p>
+<p>Transfer date: {{ invoice.invoice_transfer_date }}</p>
+<p>{{ invoice.invoice_currency }} rate on the issue day: {{ invoice.invoice_issue_rate }}</p>
+<p>{{ invoice.invoice_currency }} rate on the transfer day: {{ invoice.invoice_transfer_rate }}</p>
+
+<p>Invoice value in PLN: {{ invoice.invoice_value_pln_issue }}</p>
+<p>Invoice exchange differences: {{ invoice.invoice_exchange_differences  }}</p>
+
+
+{% endblock %}

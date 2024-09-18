@@ -26,5 +26,5 @@ class Invoice(db.Model):
         return round(self.invoice_value_pln_issue-self.invoice_value_pln_transfer,2)
 
     def __repr__(self):
-        return f"Invoice value: ${self.invoice_value}, exchange differences: {self.invoice_exchange_differences}PLN"
+        return f"Invoice of {self.invoice_issue_date};"
 

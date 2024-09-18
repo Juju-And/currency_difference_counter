@@ -35,3 +35,8 @@ def register_routes(app, db):
 
         invoices = Invoice.query.all()
         return render_template("index.html", invoices=invoices)
+
+    @app.route('/details/<invoice_id>', methods=['GET'])
+    def details(invoice_id):
+        invoice = Invoice.query.filter(Invoice.invoice_id == invoice_id).first()
+        return render_template("details.html", invoice=invoice)
