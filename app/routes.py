@@ -26,3 +26,12 @@ def register_routes(app, db):
 
            invoices = Invoice.query.all()
            return render_template("index.html", invoices=invoices)
+
+
+    @app.route('/delete/<invoice_id>', methods=['DELETE'])
+    def delete(invoice_id):
+        Invoice.query.filter(invoice_id == invoice_id).delete()
+        db.session.commit()
+
+        invoices = Invoice.query.all()
+        return render_template("index.html", invoices=invoices)

@@ -6,7 +6,7 @@
 
   <ul>
     {% for invoice in invoices %}
-      <li> {{ invoice }} </li>
+      <li> {{ invoice }} <button onclick="deleteInvoice({{ invoice.invoice_id }})">Delete</button> </li>
     {% endfor %}
 
   </ul>
@@ -18,4 +18,24 @@
     <input type="text" name="invoice_transfer_date" placeholder="Invoice transfer date" required="required"><br>
     <input type="submit" value="Create">
   </form>
+
+  <script type="text/javascript">
+    function deleteInvoice(invoice_id) {
+      fetch(' {{ url_for("delete", invoice_id=invoice_id) }}' + invoice_id, {
+        method: 'DELETE'
+      }).then(response => {
+        if (response.ok) {
+          window.location.reload();
+        }
+        else {
+          console.error("Failed to delete item with invoice_id: " + invoice_id);
+        }
+      })
+      .catch(error => {
+        console.error('Error during fetching: ', error);
+      });
+
+    }
+  </script>
+
 {% endblock %}

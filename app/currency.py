@@ -1,8 +1,7 @@
 import json
 from urllib.request import urlopen
 
-invoice_date = "2024-05-16"
-transfer_date = "2024-05-16"
+
 
 def get_currency_rate(date):
     invoice_rate_url = urlopen(f'https://api.nbp.pl/api/exchangerates/tables/A/{date}/?format=json')
@@ -38,6 +37,7 @@ def collect_currency_rates(invoice_date, transfer_date):
 
 
 def calculate_currency_dif():
+
     # while True:
     #     try:
     #         invoice_value = float(input("Input the value of your latest invoice in USD... "))
@@ -45,6 +45,9 @@ def calculate_currency_dif():
     #     except ValueError:
     #         print("Invalid Input, please use format XXXX.XX")
     invoice_value = 1000
+
+    invoice_date = "2024-05-16"
+    transfer_date = "2024-05-16"
     date_and_rate = collect_currency_rates(invoice_date, transfer_date)
 
     # calculate invoice value in PLN for the date of the invoice issue (previous working day)
@@ -72,5 +75,3 @@ def calculate_currency_dif():
     }
 
     print(currency_data)
-
-calculate_currency_dif()
