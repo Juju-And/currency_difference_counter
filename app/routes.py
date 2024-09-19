@@ -54,10 +54,7 @@ def register_routes(app, db, bcrypt):
        if not current_user.is_authenticated:
             return render_template('welcome.html')
 
-       if request.method == 'GET':
-           invoices = Invoice.query.all()
-           return render_template("index.html", invoices=invoices)
-       elif request.method == 'POST':
+       if request.method == 'POST':
            invoice_value = float(request.form.get('invoice_value'))
            invoice_issue_date = request.form.get('invoice_issue_date')
            invoice_transfer_date = request.form.get('invoice_transfer_date')
@@ -73,9 +70,8 @@ def register_routes(app, db, bcrypt):
            db.session.add(invoice)
            db.session.commit()
 
-           invoices = Invoice.query.all()
-           return render_template("index.html", invoices=invoices)
-
+       invoices = Invoice.query.all()
+       return render_template("index.html", invoices=invoices)
 
 
     @app.route('/delete/<invoice_id>', methods=['DELETE'])
