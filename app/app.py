@@ -12,7 +12,7 @@ load_dotenv()
 def create_app():
 
     app = Flask(__name__, template_folder='templates')
-    app.config["SECRET_KEY"] = "44cc17091493574f"
+    app.config["SECRET_KEY"] = "SECRET_KEY"
     # app.secret_key = "SOME KEY"
 
 
