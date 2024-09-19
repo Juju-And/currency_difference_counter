@@ -3,8 +3,11 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
+import os
+from dotenv import load_dotenv
 
 db = SQLAlchemy()
+load_dotenv()
 
 def create_app():
 
@@ -15,11 +18,11 @@ def create_app():
 
     # Please adjust accordingly
     POSTGRES = {
-        "user": "postgres",
-        "pw": "coderslab",
-        "db": "currencyrates",
-        "host": "localhost",
-        "port": "5432"
+        "user": os.environ.get("user"),
+        "pw": os.environ.get("pw"),
+        "db": os.environ.get("db"),
+        "host": os.environ.get("host"),
+        "port": os.environ.get("port")
     }
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "postgresql://%(user)s:%(pw)s@%(host)s:%(port)s/%(db)s" % POSTGRES
