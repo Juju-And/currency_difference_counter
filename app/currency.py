@@ -1,15 +1,46 @@
+from datetime import datetime
+from datetime import timedelta
 import json
 from urllib.request import urlopen
+import requests
 
-
-
-def get_currency_rate(date):
-    invoice_rate_url = urlopen(f'https://api.nbp.pl/api/exchangerates/tables/A/{date}/?format=json')
+def get_currency_rate(input_date):
+    preciding_date = verify_date(input_date)
+    invoice_rate_url = urlopen(f'https://api.nbp.pl/api/exchangerates/tables/A/{preciding_date}/?format=json')
     in_json = invoice_rate_url.read()
     in_jdata = json.loads(in_json)
     # get USD currency rate for the declared date
     rate = in_jdata[0]['rates'][1]["mid"]
     return rate
+
+
+def verify_date(input_date):
+    date_format = "%Y-%m-%d"
+    str_input_date = datetime.strptime(input_date, date_format).date()
+    preciding_date = str_input_date - timedelta(days=1)
+
+    max_allowed = 10
+    attempt = 0
+
+    try:
+        # check the status code
+        url = f'https://api.nbp.pl/api/exchangerates/tables/A/{preciding_date}/?format=json'
+        response = requests.get(url)
+        while response.status_code != 200:
+            # to datetime object
+            preciding_date = preciding_date - timedelta(days=1)
+            url = f'https://api.nbp.pl/api/exchangerates/tables/A/{preciding_date}/?format=json'
+            response = requests.get(url)
+
+            attempt += 1
+            if attempt == max_allowed:
+                break
+
+    except requests.ConnectionError as e:
+        return e
+
+    return preciding_date
+
 
 def collect_currency_rates(invoice_date, transfer_date):
     # while True:

@@ -2,9 +2,10 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
+<a class="btn btn-primary" role="button" href="{{ url_for('logout') }}" style="float: right;">Logout</a>
 <a href="/">
     <form action="/">
-         <input class="btn" type="button" value="HOME" />
+        <input class="btn btn-outline-info" type="button" value="HOME" />
     </form>
 </a>
 

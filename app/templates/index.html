@@ -2,21 +2,26 @@
 {% block title %}Index{% endblock %}
 
 {% block content %}
+<a class="btn btn-primary" role="button" href="{{ url_for('logout') }}" style="float: right;">Logout</a>
 <h1>Index Page</h1>
 
-  <ul>
+  <ul class="list-group">
     {% for invoice in invoices %}
-      <li> {{ invoice }} <button onclick="deleteInvoice({{ invoice.invoice_id }})">Delete</button><a href="{{url_for('details', invoice_id=invoice.invoice_id)}}">Details</a></li>
+      <a href="{{url_for('details', invoice_id=invoice.invoice_id)}}" style="text-decoration:none">
+        <li class="list-group-item list-group-item-action"> {{ invoice }} <button onclick="deleteInvoice({{ invoice.invoice_id }})" style="float:right" class="btn btn-outline-info">Delete</button></li>
+      </a>
     {% endfor %}
 
   </ul>
 
   <h2>New Invoice</h2>
   <form action="{{ url_for('index') }}" method="POST">
-    <input type="number" step="0.01" name="invoice_value" placeholder="Invoice value" required="required"><br>
-    <input type="text" name="invoice_issue_date" placeholder="Invoice issue date" required="required"><br>
-    <input type="text" name="invoice_transfer_date" placeholder="Invoice transfer date" required="required"><br>
-    <input type="submit" value="Create">
+    <div class="form-row">
+      <input type="number" class="form-control" step="0.01" name="invoice_value" placeholder="Invoice value" required="required"><br>
+      <input type="date" class="form-control" name="invoice_issue_date" placeholder="Invoice issue date" required="required"><br>
+      <input type="date" class="form-control" name="invoice_transfer_date" placeholder="Invoice transfer date" required="required"><br>
+      <input type="submit" class="form-control btn btn-outline-info" value="Create">
+    </div>
   </form>
 
   <script type="text/javascript">
@@ -38,5 +43,4 @@
     }
   </script>
 <br>
-<a href="{{ url_for('logout') }}">Logout</a>
 {% endblock %}
