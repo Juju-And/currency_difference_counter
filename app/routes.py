@@ -1,6 +1,6 @@
 from crypt import methods
 
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from models import Invoice, User
 from currency import collect_currency_rates
 from flask_login import login_user, logout_user, current_user, login_required
@@ -65,12 +65,13 @@ def register_routes(app, db, bcrypt):
                               invoice_issue_date=invoice_issue_date,
                               invoice_transfer_date=invoice_transfer_date,
                               invoice_issue_rate=date_and_rate["invoice_rate"],
-                              invoice_transfer_rate=date_and_rate["transfer_rate"]
+                              invoice_transfer_rate=date_and_rate["transfer_rate"],
+                              user_id=current_user.uid
                              )
            db.session.add(invoice)
            db.session.commit()
 
-       invoices = Invoice.query.all()
+       invoices = Invoice.query.filter(Invoice.user_id == current_user.uid).all()
        return render_template("index.html", invoices=invoices)
 
 
@@ -88,3 +89,10 @@ def register_routes(app, db, bcrypt):
     def details(invoice_id):
         invoice = Invoice.query.filter(Invoice.invoice_id == invoice_id).first()
         return render_template("details.html", invoice=invoice)
+
+
+
+    @app.route('/admin/dashboard')  # @route() must always be the outer-most decorator
+    # @roles_required('Admin')
+    def admin_dashboard():
+        pass
