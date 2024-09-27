@@ -1,4 +1,4 @@
-# Apartment-scrapper
+# CurrencyConverter
 
 This is a web application intended to calculate currency difference between the day of issuing an invoice and the day of actual transfer to the bank account. It should always take into consideration the currency rate from the last working day before the date of issue/transfer. 
 The application accepts invoice value and two dates in order to give user the difference which should be booked for tax purposes.
