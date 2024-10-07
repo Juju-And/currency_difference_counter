@@ -1,6 +1,6 @@
-from crypt import methods
-
 from flask import render_template, request, redirect, url_for, session
+
+from auth.decorators import admin_required
 from models import Invoice, User
 from currency import collect_currency_rates
 from flask_login import login_user, logout_user, current_user, login_required
@@ -22,7 +22,7 @@ def register_routes(app, db, bcrypt):
 
             user = User.query.filter(User.username == username).first()
 
-            if bcrypt.check_password_hash(user.password, password):
+            if bcrypt.check_password_hash(user._password, password):
                 login_user(user)
                 return redirect(url_for('index'))
             else:
@@ -39,11 +39,12 @@ def register_routes(app, db, bcrypt):
             return render_template("signup.html")
         elif request.method == 'POST':
             username = request.form.get('username')
+            email = request.form.get('email')
             password = request.form.get('password')
 
             hashed_password = bcrypt.generate_password_hash(password).decode('utf8')
 
-            user = User(username=username,password=hashed_password)
+            user = User(username=username,_password=hashed_password,email=email)
             db.session.add(user)
             db.session.commit()
 
@@ -92,7 +93,8 @@ def register_routes(app, db, bcrypt):
 
 
 
-    @app.route('/admin/dashboard')  # @route() must always be the outer-most decorator
-    # @roles_required('Admin')
+    @app.route('/admin_dashboard')  # @route() must always be the outer-most decorator
+    @admin_required
     def admin_dashboard():
-        pass
+        users = User.query.all()
+        return render_template("admin.html", users=users)
