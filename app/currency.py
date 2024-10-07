@@ -41,7 +41,6 @@ def verify_date(input_date):
 
     return preciding_date
 
-
 def collect_currency_rates(invoice_date, transfer_date):
     # while True:
     #     try:

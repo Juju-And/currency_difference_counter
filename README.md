@@ -31,4 +31,4 @@ port = "5432"
 SECRET_KEY = "your_key"
 ```
 
-## Running locally#
+## Running locally
