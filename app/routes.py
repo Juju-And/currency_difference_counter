@@ -1,7 +1,9 @@
+import csv
+import io
 from datetime import datetime
 from secrets import token_urlsafe
 
-from flask import render_template, request, redirect, url_for, session, flash
+from flask import render_template, request, redirect, url_for, session, flash, Response
 
 from app import mail
 from auth.decorators import admin_required
@@ -29,14 +31,14 @@ def register_routes(app, db, bcrypt):
 
             if bcrypt.check_password_hash(user._password, password):
                 login_user(user)
-                return redirect(url_for('index'))
+                return redirect(url_for('index_get'))
             else:
                 return "Failed!"
 
     @app.route('/logout')
     def logout():
         logout_user()
-        return redirect(url_for('index'))
+        return redirect(url_for('index_get'))
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
@@ -50,7 +52,7 @@ def register_routes(app, db, bcrypt):
             hashed_password = bcrypt.generate_password_hash(password).decode('utf8')
             token = token_urlsafe(16)
 
-            user = User(username=username,_password=hashed_password,email=email,created_on=datetime.now())
+            user = User(username=username,_password=hashed_password,email=email,created_on=datetime.now(),token=token)
 
             db.session.add(user)
             db.session.commit()
@@ -71,14 +73,6 @@ def register_routes(app, db, bcrypt):
         return "Message sent!"
 
 
-        # mail_message = Message(
-        #     subject='Hi ! Don’t forget to follow me for more article!',
-        #     recipients=['kezxqacjppolequuao@hthlm.com'])
-        # mail_message.body = "This is a test"
-        # mail.send(mail_message)
-        # return "Mail has sent"
-
-
     @app.route('/user/activate/<token>', methods=['GET', 'POST'])
     def confirm_email(token):
         # if current_user.confirmed_on is not None:
@@ -86,33 +80,73 @@ def register_routes(app, db, bcrypt):
         #     return redirect(url_for("core.home"))
         current_user.confirmed_on = datetime.now()
 
+    @app.route('/', methods=['GET'])
+    def index_get():
+        """Handles GET request, fetches and displays invoices for the current user."""
+        if not current_user.is_authenticated:
+            return render_template('welcome.html')
+        else:
+            invoices = Invoice.query.filter_by(user_id=current_user.uid).all()
 
+            return render_template("index.html", invoices=invoices)
 
-
-    @app.route('/', methods=['GET', 'POST'])
-    def index():
-       if not current_user.is_authenticated:
+    @app.route('/', methods=['POST'])
+    @login_required
+    def index_post():
+        """Handles POST request, processes form data to create a new invoice."""
+        if not current_user.is_authenticated:
             return render_template('welcome.html')
 
-       if request.method == 'POST':
-           invoice_value = float(request.form.get('invoice_value'))
-           invoice_issue_date = request.form.get('invoice_issue_date')
-           invoice_transfer_date = request.form.get('invoice_transfer_date')
 
-           date_and_rate = collect_currency_rates(invoice_issue_date, invoice_transfer_date)
+        invoice_value = float(request.form.get('invoice_value'))
+        invoice_issue_date = request.form.get('invoice_issue_date')
+        invoice_transfer_date = request.form.get('invoice_transfer_date')
 
-           invoice = Invoice(invoice_value=invoice_value,
-                              invoice_issue_date=invoice_issue_date,
-                              invoice_transfer_date=invoice_transfer_date,
-                              invoice_issue_rate=date_and_rate["invoice_rate"],
-                              invoice_transfer_rate=date_and_rate["transfer_rate"],
-                              user_id=current_user.uid
-                             )
-           db.session.add(invoice)
-           db.session.commit()
+        date_and_rate = collect_currency_rates(invoice_issue_date, invoice_transfer_date)
 
-       invoices = Invoice.query.filter(Invoice.user_id == current_user.uid).all()
-       return render_template("index.html", invoices=invoices)
+        invoice = Invoice(invoice_value=invoice_value,
+                          invoice_issue_date=invoice_issue_date,
+                          invoice_transfer_date=invoice_transfer_date,
+                          invoice_issue_rate=date_and_rate["invoice_rate"],
+                          invoice_transfer_rate=date_and_rate["transfer_rate"],
+                          user_id=current_user.uid
+                         )
+        db.session.add(invoice)
+        db.session.commit()
+
+        invoices = Invoice.query.filter(Invoice.user_id == current_user.uid).all()
+        return render_template("index.html", invoices=invoices)
+
+
+    @app.route('/download_csv', methods=['GET'])
+    @login_required
+    def download_invoices_csv():
+        """Generate and download a CSV file with invoices for the current user."""
+
+        invoices = Invoice.query.filter_by(user_id=current_user.uid).all()
+
+        output = io.StringIO()
+
+        writer = csv.writer(output)
+        writer.writerow(['Invoice Value', 'Issue Date', 'Transfer Date', 'Issue Rate', 'Transfer Rate'])
+
+        for invoice in invoices:
+            writer.writerow([
+                invoice.invoice_value,
+                invoice.invoice_issue_date,
+                invoice.invoice_transfer_date,
+                invoice.invoice_issue_rate,
+                invoice.invoice_transfer_rate
+            ])
+
+        output.seek(0)
+
+        return Response(
+            output,
+            mimetype="text/csv",
+            headers={"Content-Disposition": f"attachment;filename=invoices_{current_user.uid}.csv"}
+        )
+
 
 
     @app.route('/delete/<invoice_id>', methods=['DELETE'])

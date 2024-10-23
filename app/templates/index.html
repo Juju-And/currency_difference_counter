@@ -15,9 +15,10 @@
     {% endfor %}
 
   </ul>
+      <a href="{{url_for('download_invoices_csv')}}" style="text-decoration:none">Download CSV</a>
 
   <h2>New Invoice</h2>
-  <form action="{{ url_for('index') }}" method="POST">
+  <form action="{{ url_for('index_post') }}" method="POST">
     <div class="form-row">
       <input type="number" class="form-control" step="0.01" name="invoice_value" placeholder="Invoice value" required="required"><br>
       <input type="date" class="form-control" name="invoice_issue_date" placeholder="Invoice issue date" required="required"><br>
